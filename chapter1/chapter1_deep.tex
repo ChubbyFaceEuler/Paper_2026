@@ -1,0 +1,645 @@
+% ============================================================
+% Chapter 1 -- Revised Introduction (Deep Literature Version)
+% Oxford Academic / IMS Journal Style
+% amsart + mathptmx + natbib + booktabs + lineno
+% ============================================================
+
+\documentclass[reqno, 12pt]{amsart}
+
+\usepackage{mathptmx}
+\usepackage[T1]{fontenc}
+\usepackage[utf8]{inputenc}
+\usepackage[a4paper, top=2.5cm, bottom=2.5cm, left=2.8cm, right=2.8cm]{geometry}
+\usepackage{setspace}
+\doublespacing
+\usepackage[left]{lineno}
+\usepackage{amsmath, amssymb, amsthm}
+\usepackage{mathtools}
+\usepackage[round, colon, authoryear, sort]{natbib}
+\usepackage{booktabs}
+\usepackage{microtype}
+\usepackage[dvipsnames]{xcolor}
+\usepackage[colorlinks=true, linkcolor=NavyBlue,
+            citecolor=NavyBlue, urlcolor=NavyBlue]{hyperref}
+
+% --- Custom commands ---
+\newcommand{\tauij}{\tau_{ij}}
+\newcommand{\ZHY}{\textsc{zhy}}
+\newcommand{\HY}{\textsc{hy}}
+\newcommand{\doi}[1]{\href{https://doi.org/#1}{\texttt{doi:#1}}}
+
+% --- Theorem environments ---
+\theoremstyle{plain}
+\newtheorem{theorem}{Theorem}[section]
+\newtheorem{lemma}[theorem]{Lemma}
+\newtheorem{proposition}[theorem]{Proposition}
+\newtheorem{corollary}[theorem]{Corollary}
+\theoremstyle{definition}
+\newtheorem{definition}[theorem]{Definition}
+\theoremstyle{remark}
+\newtheorem{remark}[theorem]{Remark}
+
+% --- Document metadata ---
+\title[Asynchronous Covariance Estimation and AI Reliability]{%
+  Correlation Methods in the Statistical Analysis of Financial Trading Data\\[0.3em]
+  \normalsize Chapter 1 --- Introduction (Revised and Extended, April 2026)}
+
+\author{Yang Wu Azzollini}
+
+\address{Lady Margaret Hall, University of Oxford,
+  Oxford OX2~6QA, United Kingdom}
+
+\email{yangwu.azzollini@gmail.com}
+
+\date{April 2026 \quad (Original DPhil thesis: Hilary Term, 2016)}
+
+\subjclass[2020]{Primary 62M10; Secondary 62P20, 62F10, 68T07}
+
+\keywords{Asynchronous covariance estimation, Hayashi--Yoshida estimator,
+  Epps effect, high-frequency data, AI reliability monitoring,
+  uncertainty quantification, lead-lag estimation,
+  non-synchronous trading, microstructure noise}
+
+\begin{document}
+
+\begin{abstract}
+This chapter introduces the central statistical problem addressed in
+this thesis: the estimation of covariance between processes observed
+at irregular, non-synchronous times, with explicit quantification of
+uncertainty as a function of the observed overlap structure. The
+original thesis, completed at the University of Oxford in 2016 under
+the supervision of Professor Brian~D.\ Ripley and Dr Peter Clifford,
+derived the first exact finite-sample closed-form variance expression
+for the general class of weighted asynchronous covariance estimators,
+and proved the optimality of a specific weighting scheme via a Lagrange
+multiplier argument. This revised introduction situates those results
+within the decade of subsequent literature---extending from
+endogeneity corrections and high-dimensional inconsistency to intrinsic
+bias analysis---and introduces a new application domain not considered
+in the original work: the reliability monitoring of artificial
+intelligence systems in high-stakes settings. The mathematical
+structure of the AI reliability problem is shown to be identical to
+that of asynchronous covariance estimation in high-frequency finance,
+providing a novel bridge between two currently disjoint literatures
+with concrete implications for medical AI deployment.
+\end{abstract}
+
+\maketitle
+\linenumbers
+
+\tableofcontents
+
+\bigskip\noindent\textit{Note on revision.}
+This introduction has been substantially rewritten from the 2016 DPhil
+version to reflect developments in the asynchronous covariance
+estimation literature (2016--2026) and the emergence of AI reliability
+monitoring as a major application domain. The mathematical results of
+Chapters~4--6 are unchanged from the original thesis. All contribution
+claims have been carefully verified against the current literature.
+
+% ============================================================
+\section{The Statistical Challenge of Asynchronous\\
+High-Frequency Data}
+\label{sec:challenge}
+% ============================================================
+
+\subsection{The electronic trading landscape}
+
+Financial markets have undergone a fundamental transformation in the
+decade since this thesis was first written. The migration from floor
+trading to fully electronic execution, already well advanced by 2016,
+is now essentially complete across all major asset classes. Trade and
+quote data arrive at microsecond resolution across hundreds of
+instruments simultaneously, each stream governed by its own stochastic
+arrival process, each contaminated by microstructure noise of varying
+character. The fundamental statistical challenge---how to extract
+reliable estimates of correlation from these noisy, irregularly spaced,
+asynchronous streams in real time---has not been resolved by the passage
+of time. If anything, it has become more acute.
+
+\subsection{The Epps effect and its origins}
+
+The central difficulty is one of synchronisation. Two instruments, $X$
+and $Y$, are observed at transaction times determined by independent
+point processes. The observation times of $X$ and $Y$ do not coincide:
+there is no natural common clock. When one attempts to estimate
+covariance using returns computed over regular calendar-time intervals,
+a severe downward bias emerges that intensifies as the sampling
+frequency increases. This phenomenon was first documented empirically
+by \citet{epps1979}, who showed using intraday transaction data from
+the New York Stock Exchange that pairwise stock return correlations
+decrease systematically as the sampling interval shortens---a finding
+that has since been confirmed across equities, foreign exchange, and
+futures markets \citep{toth2009, reno2003}.
+
+The origins of the Epps effect have been studied extensively. Two
+primary causes have been identified: the non-synchronicity of
+transaction times across assets \citep{reno2003}, and the existence
+of lead-lag relationships between returns, which cause correlations
+computed over short intervals to underestimate the true underlying
+comovement \citep{dejong1997}. A third, more subtle factor---the
+finite reaction time of market participants to new information---has
+been shown to impart a characteristic time scale to the phenomenon
+that does not diminish even as trading frequency increases tenfold
+\citep{toth2009}. The practical implication is unambiguous: naive
+calendar-time synchronisation of asynchronous data introduces
+systematic bias that cannot be eliminated by simply sampling more
+frequently.
+
+\subsection{The pre-synchronous era and its limitations}
+
+The earliest approach to the non-synchronous trading problem was that
+of \citet{scholes1977}, who noted that ordinary least squares estimates
+of the market model are biased and inconsistent when stocks trade at
+different times, and proposed lead-lag adjustments to the realised
+covariance estimator. This line of work---incorporating lagged
+cross-returns into the estimator---mitigates but does not eliminate
+the bias, since the optimal number of lags is unknown and the
+corrections introduce additional noise. The alternative approach of
+imposing a regular grid by previous-tick interpolation or linear
+interpolation before computing returns introduces its own biases,
+particularly for illiquid assets with infrequent trades
+\citep{barndorff2011}.
+
+\subsection{The Hayashi--Yoshida estimator}
+
+The estimator of \citet{hayashi2005} addressed this problem at its
+root by operating directly on the raw asynchronous data, using the
+overlap structure of successive price increments rather than requiring
+any synchronisation of the original observations. If $\Delta P^{(1)}_i$
+denotes the $i$-th increment of the first price process and
+$\Delta P^{(2)}_j$ the $j$-th increment of the second, the estimator
+sums all products $\Delta P^{(1)}_i \cdot \Delta P^{(2)}_j$ for which
+the corresponding time intervals overlap:
+\begin{equation}
+  \widehat{[P^{(1)},P^{(2)}]}_{\HY}
+  = \sum_{i,j} \Delta P^{(1)}_i \cdot \Delta P^{(2)}_j
+    \cdot \mathbf{1}\!\left\{I_i \cap J_j \neq \emptyset\right\},
+  \label{eq:HY}
+\end{equation}
+where $I_i = (\tau^{(1)}_{i-1}, \tau^{(1)}_i]$ and
+$J_j = (\tau^{(2)}_{j-1}, \tau^{(2)}_j]$ are the observation intervals
+for the two assets. This estimator is consistent for the true
+integrated covariance as the mesh of observation times tends to zero
+\citep{hayashi2005}, asymptotically normal \citep{hayashi2008}, and
+free of the biases introduced by synchronisation \citep{griffin2011}.
+It was a substantial advance.
+
+\subsection{The critical gap: uncertainty quantification}
+
+However, a critical question remained unanswered in the original
+formulation:
+\begin{quote}
+\emph{What is the exact variance of this estimator, and how does it
+depend on the observed overlap structure?}
+\end{quote}
+Without a tractable answer to this question, practitioners have no
+principled basis for uncertainty quantification: they cannot know how
+much to trust any particular correlation estimate given the specific
+pattern of trades observed. \citet{griffin2011} derived closed-form
+bias and variance expressions for the basic \HY{} estimator under the
+specific assumption of Poisson sampling with independent i.i.d.\
+microstructure noise---a result of considerable practical value, but
+one that depends critically on the Poisson distributional assumption
+for the observation times.
+
+This thesis addresses the general case. In Chapter~5 we derive an
+exact, finite-sample, closed-form expression for the variance of a
+general class of weighted asynchronous covariance estimators, as an
+explicit function of the observed overlap structure $\tauij$. This
+result is \emph{not asymptotic} and requires \emph{no distributional
+assumptions} on the arrival process of observations. We prove that a
+specific set of weights---optimal in the sense of minimising this
+variance within the class of linear estimators---can be derived
+analytically via a Lagrange multiplier argument. We further show that
+the resulting estimator admits a recursive update formula, processing
+each new observation in $O(1)$ time, making it suitable for real-time
+implementation.
+
+% ============================================================
+\section{A Decade of Subsequent Literature}
+\label{sec:literature_fin}
+% ============================================================
+
+The literature on asynchronous covariance estimation has advanced
+substantially since 2016, and intellectual honesty requires careful
+positioning of the present work within it.
+
+\subsection{Noise and asynchronicity: the bivariate case}
+
+Several major papers have extended the theoretical foundations. The
+multivariate realised kernel estimator of \citet{barndorff2011}
+achieves consistency, positive semi-definiteness, and robustness to
+measurement noise simultaneously---a combination that had not
+previously been achieved---using a refresh-time synchronisation scheme
+that discards a fraction of the data to impose a common observation
+grid. \citet{aitsahalia2010} proposed a quasi-maximum likelihood
+approach for the bivariate case that handles both noise and
+asynchronicity without discarding observations, obtaining a consistent
+and efficient estimator under Gaussian noise. These represent the main
+competing approaches to the problem and form the natural benchmark
+against which the results of this thesis should be assessed.
+
+\subsection{Endogeneity of sampling times}
+
+A different line of extension addresses the case where observation
+times are endogenous---that is, where the timing of trades depends on
+the price process itself, as would arise in models of informed trading
+or strategic order submission. \citet{robert2012} established
+volatility and covariation estimators under a general endogenous
+microstructure model. \citet{koike2014} and \citet{koike2015}
+extended the pre-averaged \HY{} estimator to this setting, deriving
+an optimal weighting scheme for the pre-averaging step under time
+endogeneity. These results are important context for Chapter~5:
+our optimal weight derivation is complementary to, but distinct from,
+the Koike weights, which address a different source of optimisation.
+
+\subsection{High-dimensional inconsistency}
+
+\citet{chakrabarti2022} established that the \HY{} estimator is
+inconsistent in the high-dimensional regime---when the number of
+assets $p$ grows proportionally with the number of observations
+$n$---and characterised the limiting spectral distribution of the
+resulting covariance matrix estimate. This result does not affect the
+finite-sample variance formula of Chapter~5, which applies in the
+bivariate case, but it is important context for understanding the
+scope of applicability of the \HY{} framework.
+
+\subsection{Intrinsic bias}
+
+\citet{georgiadis2024} identified a previously overlooked intrinsic
+bias in the \HY{} estimator arising from its telescoping structure:
+certain observation points are effectively double-counted when
+intervals overlap at their endpoints, causing the estimator to cancel
+out relevant data points. This ``formulaic bias'' is present even in
+the noise-free case and is distinct from the microstructure bias
+studied by \citet{griffin2011}. The conditions under which it arises
+and its magnitude under Poisson sampling are characterised. The
+relationship between this bias and the weighted estimator of Chapter~5
+is an open question.
+
+\subsection{Position of this thesis}
+
+Against this background, the contribution of Chapter~5 is positioned
+as follows. The \citeauthor{griffin2011} variance formula is derived
+under Poisson sampling---a specific distributional model. The formula
+of Theorem~5.1 is \emph{non-asymptotic and model-free}: it holds for
+any realised observation times $\tauij$, without distributional
+assumptions on the arrival process. Furthermore, this thesis treats
+the \emph{general class of weighted estimators} of the form
+\begin{equation}
+  \widehat{C}_w = \sum_{i,j} w_{ij}\,
+    \Delta P^{(1)}_i \cdot \Delta P^{(2)}_j
+    \cdot \mathbf{1}\!\left\{I_i \cap J_j \neq \emptyset\right\},
+\end{equation}
+and proves that the weights $w_{ij} = \tauij/(\tau_i^{(1)}\tau_j^{(2)})$,
+where $\tauij = |I_i \cap J_j|$, $\tau_i^{(1)} = |I_i|$,
+and $\tau_j^{(2)} = |J_j|$, minimise the exact finite-sample variance.
+These two features---finite-sample exactness for arbitrary observation
+times, and proved optimality of the weighting scheme---distinguish the
+results of Chapter~5 from all existing work of which the author is
+aware.
+
+% ============================================================
+\section{A New Context: Artificial Intelligence\\
+Reliability Monitoring}
+\label{sec:AI}
+% ============================================================
+
+\subsection{The mathematical parallel}
+
+In the decade since this thesis was written, the statistical problems
+it addresses have acquired a new and urgent application domain: the
+reliability monitoring of artificial intelligence systems deployed in
+high-stakes environments. This connection was not anticipated in the
+original formulation, but it is not accidental. The mathematical
+structure of the problem is identical.
+
+Modern AI systems---large language models, medical diagnostic tools,
+autonomous decision systems---produce outputs at irregular intervals
+determined by query arrival times and computational latency. Multiple
+AI components operating in parallel produce correlated output streams
+that arrive asynchronously: a diagnostic model produces a prediction
+at time $t_i$, a confidence estimator produces a score at time $t_j$,
+a downstream verification system produces a check at time $t_k$. The
+temporal structure of these outputs is precisely that of the
+high-frequency financial data studied in this thesis: point process
+observations, irregular spacing, correlation structure of fundamental
+practical importance.
+
+\subsection{The reliability gap in current AI monitoring}
+
+The reliability question in AI has the same statistical character as
+the correlation question in finance: \emph{when can you trust the
+relationship between two streams, and how confident can you be in that
+assessment given the specific observations available?} Current AI
+monitoring practice offers no satisfactory answer. Production systems
+rely on heuristic tools---Population Stability Index (PSI),
+Kolmogorov--Smirnov tests, autoencoder reconstruction error---designed
+for batch, synchronous, single-stream monitoring. They provide no
+provable uncertainty bounds, cannot handle asynchronous observation
+natively, and cannot detect the emergence of systematic lead-lag
+relationships between correlated outputs.
+
+The deficiencies of these approaches have been documented. Statistical
+frameworks for assessing the reliability of generative AI have been
+identified as a fundamental unsolved problem \citep{dobriban2025}.
+Methods for detecting hallucinations in large language models through
+semantic entropy \citep{farquhar2024} and for uncertainty
+quantification in clinical AI \citep{lindenmeyer2025} represent recent
+progress, but neither addresses the problem of real-time correlation
+monitoring between asynchronous output streams with provable
+uncertainty bounds.
+
+\subsection{Medical AI and the stakes of reliability}
+
+The stakes are highest in medicine. The work of \citet{singhal2023}
+on Med-PaLM demonstrated that a large language model could exceed a
+passing score on the US Medical Licensing Examination for the first
+time; \citet{singhal2025} showed Med-PaLM~2 achieving performance
+comparable to physician-level answers on nine of nine clinical quality
+axes. These results establish the \emph{capability} of AI in clinical
+settings. What they do not establish---and what no current framework
+provides---is a principled method for monitoring whether those
+capabilities are being reliably exercised in live deployment.
+
+A radiologist using an AI diagnostic assistant, a clinician relying
+on an AI-augmented monitoring system in an intensive care unit, a
+risk manager using an AI-driven early warning system: none of them
+currently have access to mathematically principled answers to the
+question of how confident they should be in a given output, given what
+the system has been doing recently. The gap between AI
+\emph{capability} benchmarks and AI \emph{reliability} monitoring
+tools has been identified as a critical obstacle to safe deployment
+\citep{lindenmeyer2025}.
+
+\subsection{The framework of this thesis as a solution}
+
+The framework developed in this thesis provides the mathematical
+foundation for addressing this gap. The $\tauij$ overlap structure
+that determines the precision of a financial covariance estimate has
+an exact analogue in the temporal relationship between AI output
+streams. The recursive update formula that enables real-time financial
+monitoring is equally applicable to real-time AI reliability
+monitoring. The lead-lag estimation methodology of Chapter~6 provides
+a principled tool for detecting systematic delays between correlated
+AI outputs---a failure mode in which one component of an AI pipeline
+begins to lag another in a way that signals emergent unreliability.
+This failure mode has no current detection method in the literature.
+
+% ============================================================
+\section{Structure of This Work}
+\label{sec:structure}
+% ============================================================
+
+Chapter~2 provides the financial background: the sources and
+characteristics of high-frequency data, the electronic trading
+environment, and the role of latency in constraining the class of
+feasible statistical estimators. The key insight is that computational
+speed places hard constraints on what is statistically possible
+in real time---a constraint that is equally relevant in AI monitoring
+settings.
+
+Chapter~3 introduces the foundational computational tools:
+exponentially weighted moving averages, dynamic linear models,
+Kalman filtering. The emphasis throughout is on recursive formulations
+that can be updated in $O(1)$ time per new observation, rather than
+batch methods requiring $O(n)$ recomputation.
+
+Chapter~4 addresses univariate volatility estimation for irregularly
+spaced noisy data, building on the subsampling framework of
+\citet{zhou1996}. We derive explicit expressions for the variance of
+a class of estimators and establish infill consistency---a property
+that will be mirrored in the bivariate setting of Chapter~5.
+
+Chapter~5---the central theoretical contribution---develops the
+extended \ZHY{} covariance estimator. The main results are:
+\begin{enumerate}
+  \item Theorem~5.1: exact finite-sample closed-form variance
+    expression as an explicit function of $\tauij$;
+  \item optimality proof: the weights
+    $w_{ij} = \tauij/(\tau_i^{(1)}\tau_j^{(2)})$ minimise this
+    variance in the class of linear estimators (Lagrange multiplier
+    argument);
+  \item recursive update formula: $O(1)$ update per new observation.
+\end{enumerate}
+
+Chapter~6 develops the maximum likelihood estimator for lead-lag delay
+in the asynchronous setting, extending the contrast-optimisation
+approach of \citet{hoffmann2013}. We demonstrate its application to
+high-frequency financial instruments and discuss its implications for
+AI reliability monitoring.
+
+The conclusion identifies open problems---in particular, the
+development of a sequential change detection framework for asynchronous
+cross-stream correlation with finite-sample Type~I and Type~II error
+guarantees---and outlines the research programme that follows from
+this work.
+
+% ============================================================
+\section{The Broader Significance}
+\label{sec:significance}
+% ============================================================
+
+The question this thesis addresses---how to know when to trust a
+correlation estimate computed from asynchronous noisy data---has
+acquired a significance in 2026 that could not have been fully
+anticipated in 2016. AI systems are now deployed in medical diagnosis,
+drug discovery, and financial risk management, domains where errors
+have direct human consequences. The deployment has outpaced the
+development of rigorous tools for monitoring whether those systems are
+behaving as expected.
+
+The dominant narrative in AI research concerns capability: making
+systems more powerful, more accurate, more general. The question of
+reliability---\emph{when can you trust the system enough to act on its
+output}---receives far less rigorous attention. Current monitoring
+practice relies on heuristic thresholds whose statistical properties
+are either unknown or depend on distributional assumptions that
+production data routinely violates.
+
+The mathematical framework of this thesis does not solve that problem
+in its full generality. But it provides a rigorous foundation for one
+critical component of the answer: real-time monitoring of cross-stream
+correlation with provable uncertainty bounds, for genuinely asynchronous
+point process observations. That is a narrow contribution, but a
+genuine one. In a field where the gap between what is claimed and what
+is proved has grown dangerously wide, narrowness paired with rigour is
+not a weakness. It is exactly what is needed.
+
+% ============================================================
+\begin{thebibliography}{99}
+
+\bibitem[\protect\citeauthoryear{{A\"{i}t-Sahalia}, Fan and Xiu}%
+  {{A\"{i}t-Sahalia} et~al.}{2010}]{aitsahalia2010}
+\textsc{A\"{i}t-Sahalia, Y., Fan, J. and Xiu, D.} (2010).
+High-frequency covariance estimates with noisy and asynchronous
+financial data.
+\textit{Journal of the American Statistical Association}
+\textbf{105}(492), 1504--1517.
+\doi{10.1198/jasa.2010.tm10163}.
+
+\bibitem[\protect\citeauthoryear{Barndorff-Nielsen, Hansen, Lunde and
+  Shephard}{Barndorff-Nielsen et~al.}{2011}]{barndorff2011}
+\textsc{Barndorff-Nielsen, O.~E., Hansen, P.~R., Lunde, A.
+  and Shephard, N.} (2011).
+Multivariate realised kernels: Consistent positive semi-definite
+estimators of the covariation of equity prices with noise and
+non-synchronous trading.
+\textit{Journal of Econometrics} \textbf{162}(2), 149--169.
+\doi{10.1016/j.jeconom.2010.07.009}.
+
+\bibitem[\protect\citeauthoryear{Chakrabarti and Sen}{Chakrabarti and
+  Sen}{2022}]{chakrabarti2022}
+\textsc{Chakrabarti, A. and Sen, R.} (2022).
+Limiting spectral distribution of high-dimensional {Hayashi--Yoshida}
+estimator of integrated covariance matrix.
+\textit{arXiv preprint} arXiv:2201.00119.
+
+\bibitem[\protect\citeauthoryear{De~Jong and Nijman}{De~Jong and
+  Nijman}{1997}]{dejong1997}
+\textsc{De~Jong, F. and Nijman, T.} (1997).
+High frequency analysis of lead-lag relationships between financial
+markets.
+\textit{Journal of Empirical Finance} \textbf{4}(2--3), 259--277.
+
+\bibitem[\protect\citeauthoryear{Dobriban}{Dobriban}{2025}]{dobriban2025}
+\textsc{Dobriban, E.} (2025).
+Statistical methods in generative {AI}.
+\textit{arXiv preprint} arXiv:2509.07054.
+
+\bibitem[\protect\citeauthoryear{Epps}{Epps}{1979}]{epps1979}
+\textsc{Epps, T.~W.} (1979).
+Comovements in stock prices in the very short run.
+\textit{Journal of the American Statistical Association}
+\textbf{74}(366), 291--298.
+
+\bibitem[\protect\citeauthoryear{Farquhar, Kossen, Kuhn and Gal}%
+  {Farquhar et~al.}{2024}]{farquhar2024}
+\textsc{Farquhar, S., Kossen, J., Kuhn, L. and Gal, Y.} (2024).
+Detecting hallucinations in large language models using semantic
+entropy.
+\textit{Nature} \textbf{630}(8017), 625--630.
+\doi{10.1038/s41586-024-07421-0}.
+
+\bibitem[\protect\citeauthoryear{Georgiadis}{Georgiadis}{2024}]{georgiadis2024}
+\textsc{Georgiadis, E.} (2024).
+A note on asynchronous challenges: Unveiling formulaic bias and data
+loss in the {Hayashi--Yoshida} estimator.
+\textit{arXiv preprint} arXiv:2404.18233.
+
+\bibitem[\protect\citeauthoryear{Griffin and Oomen}{Griffin and
+  Oomen}{2011}]{griffin2011}
+\textsc{Griffin, J.~E. and Oomen, R.~C.~A.} (2011).
+Covariance measurement in the presence of non-synchronous trading and
+market microstructure noise.
+\textit{Journal of Econometrics} \textbf{160}(1), 58--68.
+\doi{10.1016/j.jeconom.2010.03.015}.
+
+\bibitem[\protect\citeauthoryear{Hayashi and Yoshida}{Hayashi and
+  Yoshida}{2005}]{hayashi2005}
+\textsc{Hayashi, T. and Yoshida, N.} (2005).
+On covariance estimation of non-synchronously observed diffusion
+processes.
+\textit{Bernoulli} \textbf{11}(2), 359--379.
+\doi{10.3150/bj/1116340299}.
+
+\bibitem[\protect\citeauthoryear{Hayashi and Yoshida}{Hayashi and
+  Yoshida}{2008}]{hayashi2008}
+\textsc{Hayashi, T. and Yoshida, N.} (2008).
+Asymptotic normality of a covariance estimator for nonsynchronously
+observed diffusion processes.
+\textit{Annals of the Institute of Statistical Mathematics}
+\textbf{60}(2), 367--406.
+
+\bibitem[\protect\citeauthoryear{Hoffmann, Rosenbaum and
+  Yoshida}{Hoffmann et~al.}{2013}]{hoffmann2013}
+\textsc{Hoffmann, M., Rosenbaum, M. and Yoshida, N.} (2013).
+Estimation of the lead-lag parameter from non-synchronous data.
+\textit{Bernoulli} \textbf{19}(2), 426--461.
+\doi{10.3150/11-BEJ407}.
+
+\bibitem[\protect\citeauthoryear{Huang, Yang, Zhu and Chen}{Huang
+  et~al.}{2024}]{huang2024triadic}
+\textsc{Huang, Y., Yang, K., Zhu, Z. and Chen, L.} (2024).
+{Triadic-OCD}: Asynchronous online change detection with provable
+robustness, optimality, and convergence.
+In \textit{Proceedings of the 41st International Conference on Machine
+Learning}, Vol.~235 of \textit{Proceedings of Machine Learning
+Research}, pp.~20382--20412. PMLR.
+
+\bibitem[\protect\citeauthoryear{Koike}{Koike}{2014}]{koike2014}
+\textsc{Koike, Y.} (2014).
+Limit theorems for the pre-averaged {Hayashi--Yoshida} estimator with
+random sampling.
+\textit{Stochastic Processes and their Applications}
+\textbf{124}(8), 2699--2753.
+
+\bibitem[\protect\citeauthoryear{Koike}{Koike}{2015}]{koike2015}
+\textsc{Koike, Y.} (2015).
+Time endogeneity and an optimal weight for the pre-averaged
+{Hayashi--Yoshida} estimator.
+\textit{Statistical Inference for Stochastic Processes}
+\textbf{18}(3), 234--281.
+
+\bibitem[\protect\citeauthoryear{Lindenmeyer, Blattmann, Franke,
+  Neumuth and Schneider}{Lindenmeyer et~al.}{2025}]{lindenmeyer2025}
+\textsc{Lindenmeyer, A., Blattmann, M., Franke, S., Neumuth, T.
+  and Schneider, D.} (2025).
+Towards trustworthy {AI} in healthcare: Epistemic uncertainty
+estimation for clinical decision support.
+\textit{Journal of Personalized Medicine} \textbf{15}(2), 58.
+\doi{10.3390/jpm15020058}.
+
+\bibitem[\protect\citeauthoryear{Ren\`{o}}{Ren\`{o}}{2003}]{reno2003}
+\textsc{Ren\`{o}, R.} (2003).
+A closer look at the {Epps} effect.
+\textit{International Journal of Theoretical and Applied Finance}
+\textbf{6}(1), 87--102.
+
+\bibitem[\protect\citeauthoryear{Robert and Rosenbaum}{Robert and
+  Rosenbaum}{2012}]{robert2012}
+\textsc{Robert, C.~Y. and Rosenbaum, M.} (2012).
+Volatility and covariation estimation when microstructure noise and
+trading times are endogenous.
+\textit{Mathematical Finance} \textbf{22}(1), 133--164.
+\doi{10.1111/j.1467-9965.2010.00454.x}.
+
+\bibitem[\protect\citeauthoryear{Scholes and Williams}{Scholes and
+  Williams}{1977}]{scholes1977}
+\textsc{Scholes, M. and Williams, J.} (1977).
+Estimating betas from nonsynchronous data.
+\textit{Journal of Financial Economics} \textbf{5}(3), 309--327.
+\doi{10.1016/0304-405X(77)90041-1}.
+
+\bibitem[\protect\citeauthoryear{Singhal et~al.}{Singhal
+  et~al.}{2023}]{singhal2023}
+\textsc{Singhal, K., Azizi, S., Tu, T. et~al.} (2023).
+Large language models encode clinical knowledge.
+\textit{Nature} \textbf{620}, 172--180.
+\doi{10.1038/s41586-023-06291-2}.
+
+\bibitem[\protect\citeauthoryear{Singhal et~al.}{Singhal
+  et~al.}{2025}]{singhal2025}
+\textsc{Singhal, K., Tu, T., Gottweis, J. et~al.} (2025).
+Toward expert-level medical question answering with large language
+models.
+\textit{Nature Medicine} \textbf{31}(3), 943--950.
+\doi{10.1038/s41591-024-03423-7}.
+
+\bibitem[\protect\citeauthoryear{T\'{o}th and Kert\'{e}sz}{T\'{o}th
+  and Kert\'{e}sz}{2009}]{toth2009}
+\textsc{T\'{o}th, B. and Kert\'{e}sz, J.} (2009).
+The {Epps} effect revisited.
+\textit{Quantitative Finance} \textbf{9}(7), 793--802.
+
+\bibitem[\protect\citeauthoryear{Zhou}{Zhou}{1996}]{zhou1996}
+\textsc{Zhou, B.} (1996).
+High-frequency data and volatility in foreign-exchange rates.
+\textit{Journal of Business \& Economic Statistics}
+\textbf{14}(1), 45--52.
+\doi{10.1080/07350015.1996.10524628}.
+
+\end{thebibliography}
+
+\end{document}
