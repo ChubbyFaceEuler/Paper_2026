@@ -1,1 +1,10 @@
+*.aux
+*.log
+*.out
+*.pkl
+*.npy
+*.pyc
+__pycache__/
+.lake/
+trading/data/*.csv
 .DS_Store

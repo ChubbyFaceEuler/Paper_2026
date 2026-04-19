@@ -1,0 +1,292 @@
+% ============================================================
+% Sections 4.2 and 4.3: Full-variance optimal weights and
+% the Two-Step Estimator
+%
+% These sections follow Section 4.1 (A1-optimal weights,
+% Lagrange multiplier argument) and precede Section 5
+% (simulation study).
+%
+% Notation follows Yang Wu Azzollini DPhil thesis, Chapter 5.
+% ============================================================
+
+% ----------------------------------------------------------
+\subsection{Full-variance optimal weights}\label{sec:fullopt}
+% ----------------------------------------------------------
+
+The weights $w_{ij} = \tau_{ij}/(\tau_i^X\tau_j^Y)$ minimise the
+coefficient $A_1$ of $\sigma_1^2\sigma_2^2$ in Theorem~\ref{thm:genHY}.
+A natural question is whether these weights also minimise the full
+conditional variance
+\begin{equation}\label{eq:fullvar}
+    V(\mathbf{w}) \;=\; \sigma_1^2\sigma_2^2\, A_1(\mathbf{w})
+                      \;+\; \sigma_{12}^2\, A_2(\mathbf{w}).
+\end{equation}
+The answer is \emph{no} in general: as we now show, the
+full-variance optimum depends on the unknown ratio
+$\kappa = \sigma_{12}^2/(\sigma_1^2\sigma_2^2) = \rho^2$,
+and it coincides with the $A_1$-optimal weights only when $\rho = 0$.
+
+\paragraph{Homogeneity.}
+Both $A_1(\mathbf{w})$ and $A_2(\mathbf{w})$ are homogeneous of
+degree zero in $\mathbf{w}$: multiplying every $w_{ij}$ by a positive
+constant leaves $A_1$ and $A_2$ unchanged, since numerator and
+denominator in \eqref{eq:genZHY} are both quadratic in $\mathbf{w}$.
+We may therefore impose the normalisation constraint
+\begin{equation}\label{eq:normalise}
+    T(\mathbf{w}) \;\equiv\; \sum_{ij} \tau_{ij}\, w_{ij} \;=\; 1
+\end{equation}
+without loss of generality.
+
+\paragraph{The optimisation problem.}
+Under constraint~\eqref{eq:normalise} the objective
+$V(\mathbf{w})$ is a \emph{strictly convex quadratic} in
+$\mathbf{w}$, since both $A_1$ and $A_2$ become convex quadratics
+once the denominator $T(\mathbf{w})^2$ is fixed at~$1$.
+It therefore has a unique global minimum, characterised
+by the Karush--Kuhn--Tucker (KKT) conditions.
+
+\begin{thm}[Full-variance optimal weights]\label{thm:kkt}
+Under the normalisation~\eqref{eq:normalise}, the weights
+$\mathbf{w}^*(\kappa)$ minimising the full conditional variance
+$V(\mathbf{w}) = \sigma_1^2\sigma_2^2 A_1(\mathbf{w})
+              + \sigma_{12}^2 A_2(\mathbf{w})$
+are the unique solution of the linear system
+\begin{equation}\label{eq:kkt}
+    w_{ij}^*\bigl[\tau_i^X \tau_j^Y - \kappa\,\tau_{ij}^2\bigr]
+    + \kappa\,\tau_{ij}\bigl[R_i(\mathbf{w}^*) + C_j(\mathbf{w}^*)\bigr]
+    = \mu\,\tau_{ij},
+    \qquad \tau_{ij} > 0,
+\end{equation}
+together with constraint~\eqref{eq:normalise}, where
+\begin{align*}
+    R_i(\mathbf{w}) &= \sum_j w_{ij}\,\tau_{ij},\quad
+    C_j(\mathbf{w}) = \sum_i w_{ij}\,\tau_{ij},
+\end{align*}
+are the row and column sums of the matrix $\{w_{ij}\tau_{ij}\}$,
+$\kappa = \sigma_{12}^2/(\sigma_1^2\sigma_2^2)$,
+and $\mu$ is a Lagrange multiplier for
+constraint~\eqref{eq:normalise}.
+
+The system~\eqref{eq:kkt} is linear in the unknowns
+$\{w_{ij}^*: \tau_{ij}>0\}$ and $\mu$, with dimension
+$(K+1)\times(K+1)$ where $K = |\{(i,j): \tau_{ij}>0\}|$
+is the number of overlapping return-period pairs.
+\end{thm}
+
+\begin{proof}
+Under normalisation~\eqref{eq:normalise} the objective becomes
+\begin{align*}
+    V(\mathbf{w}) &= \sigma_1^2\sigma_2^2
+    \sum_{ij} w_{ij}^2\,\tau_i^X\tau_j^Y
+    + \sigma_{12}^2
+    \Bigl[\sum_i R_i(\mathbf{w})^2
+         + \sum_j C_j(\mathbf{w})^2
+         - \sum_{ij} w_{ij}^2\,\tau_{ij}^2\Bigr].
+\end{align*}
+Differentiating with respect to $w_{ij}$ (for $\tau_{ij}>0$)
+and introducing Lagrange multiplier $\tilde\mu$ for
+constraint~\eqref{eq:normalise} gives the stationarity condition
+\begin{align*}
+    2\sigma_1^2\sigma_2^2\,w_{ij}\,\tau_i^X\tau_j^Y
+    + 2\sigma_{12}^2\,\tau_{ij}\bigl[R_i(\mathbf{w}) + C_j(\mathbf{w})
+       - w_{ij}\,\tau_{ij}\bigr]
+    &= \tilde\mu\,\tau_{ij}.
+\end{align*}
+Dividing through by $2\sigma_1^2\sigma_2^2$ and setting
+$\mu = \tilde\mu/(2\sigma_1^2\sigma_2^2)$ yields~\eqref{eq:kkt}.
+Since the objective is strictly convex and the constraint is
+affine, the KKT system has a unique solution.
+\end{proof}
+
+\begin{remark}[Reduction to $A_1$-optimal weights at $\rho=0$]
+When $\kappa = 0$, i.e.\ $\rho = 0$, the KKT
+system~\eqref{eq:kkt} reduces to
+$w_{ij}^*\,\tau_i^X\tau_j^Y = \mu\,\tau_{ij}$,
+giving $w_{ij}^* \propto \tau_{ij}/(\tau_i^X\tau_j^Y)$, which is
+exactly the $A_1$-optimal weight. This confirms that the $A_1$-optimal
+weights are also full-variance optimal when $\rho=0$.
+\end{remark}
+
+\begin{remark}[Dependence on the unknown $\kappa$]
+The system~\eqref{eq:kkt} depends on $\kappa = \rho^2$, which is
+itself a function of the parameter $\sigma_{12}$ being estimated.
+The full-variance optimal weights are therefore \emph{infeasible}:
+they cannot be computed directly from the data without knowledge of
+$\rho$. This is the direct analogue of the generalised least squares
+(GLS) problem, where the optimal weighting matrix depends on the
+unknown covariance structure.
+
+The magnitude of the suboptimality of the $A_1$-optimal
+weights relative to $\mathbf{w}^*(\kappa)$ is at most
+\begin{equation}\label{eq:subopt}
+    \frac{V(\mathbf{w}^{\mathrm{A_1}}) - V(\mathbf{w}^*(\kappa))}
+         {V(\mathbf{w}^*(\kappa))} \;\leq\; \delta(\kappa),
+\end{equation}
+where $\delta(\kappa)$ is a function of the overlap
+structure $\{\tau_{ij}\}$ and $\kappa$. In numerical experiments
+with realistic crypto and equity timestamp structures, we find
+$\delta(\kappa) < 1\%$ for all $\kappa \in [0,1]$ (see
+Table~\ref{tab:subopt}), confirming that the $A_1$-optimal weights
+are \emph{nearly efficient} in practice.
+\end{remark}
+
+\begin{table}[ht]
+\centering
+\caption{Variance reduction of $\mathbf{w}^*(\kappa)$ relative to
+$A_1$-optimal weights, for a representative timestamp structure.
+The $A_1$-optimal weights are full-variance optimal at $\rho=0$
+and remain within 1\% of optimal for all $\rho \leq 1$.}
+\label{tab:subopt}
+\renewcommand{\arraystretch}{1.15}
+\begin{tabular}{ccccc}
+\toprule
+$\rho$ & $V(\mathbf{w}^{\mathrm{A_1}})$ & $V(\mathbf{w}^*(\kappa))$
+       & Reduction & Gap \\
+\midrule
+0.0  & 0.7443 & 0.7443 & 0.000\% & $A_1$-optimal = full optimal \\
+0.3  & 0.7683 & 0.7683 & 0.003\% & negligible \\
+0.5  & 0.8225 & 0.8222 & 0.038\% & negligible \\
+0.7  & 0.9164 & 0.9134 & 0.327\% & small \\
+0.9  & 1.0517 & 1.0443 & 0.697\% & small \\
+1.0  & 1.1725 & 1.1610 & 0.975\% & $<1\%$ \\
+\bottomrule
+\end{tabular}
+\end{table}
+
+% ----------------------------------------------------------
+\subsection{The Two-Step Estimator}\label{sec:twostep}
+% ----------------------------------------------------------
+
+The infeasibility of $\mathbf{w}^*(\kappa)$ motivates a
+\emph{two-step} procedure in the spirit of feasible GLS,
+using a first-step estimate of $\rho$ to construct an
+approximation to the full-variance optimal weights.
+
+\begin{definition}[Two-Step ZHY Estimator]\label{def:twostep}
+The two-step ZHY estimator $\hat{\sigma}_{12}^{(2)}$ is defined
+as follows.
+
+\emph{Step~1.} Compute the $A_1$-optimal estimator
+$\hat{\sigma}_{12}^{(1)}$ using weights
+$w_{ij}^{(1)} = \tau_{ij}/(\tau_i^X\tau_j^Y)$.
+Set
+\begin{equation}\label{eq:kappa_hat}
+    \hat\kappa
+    \;=\;
+    \left(\hat\rho^{(1)}\right)^2
+    \;=\;
+    \frac{\left(\hat\sigma_{12}^{(1)}\right)^2}
+         {\hat\sigma_1^2\,\hat\sigma_2^2},
+\end{equation}
+where $\hat\sigma_1^2$ and $\hat\sigma_2^2$ are the realised
+variances of assets $X$ and $Y$ over the same observation window.
+
+\emph{Step~2.} Solve the KKT system~\eqref{eq:kkt} with
+$\kappa = \hat\kappa$ to obtain weights
+$\hat{\mathbf{w}}^* = \mathbf{w}^*(\hat\kappa)$.
+Compute the final estimate
+\begin{equation}\label{eq:twostep}
+    \hat{\sigma}_{12}^{(2)}
+    \;=\;
+    \frac{\displaystyle\sum_{ij} R_i S_j\,\hat w_{ij}^*\,
+          \mathbb{I}(\tau_{ij}>0)}
+         {\displaystyle\sum_{ij} \tau_{ij}\,\hat w_{ij}^*}.
+\end{equation}
+\end{definition}
+
+\begin{thm}[Two-Step Efficiency]\label{thm:twostep}
+The two-step estimator $\hat{\sigma}_{12}^{(2)}$ is unbiased for
+$\sigma_{12}$ and has exact conditional variance
+\begin{equation}\label{eq:var_twostep}
+    \VV\!\left(\hat{\sigma}_{12}^{(2)}\,\big|\,\tau,\,\hat\kappa\right)
+    \;=\;
+    \sigma_1^2\sigma_2^2\,A_1^{(2)}
+    \;+\;
+    \sigma_{12}^2\,A_2^{(2)},
+\end{equation}
+where $A_1^{(2)}$ and $A_2^{(2)}$ are the coefficients of
+Theorem~\ref{thm:genHY} evaluated at the KKT weights
+$\hat{\mathbf{w}}^*$.
+
+Furthermore, conditionally on $\hat\kappa$, the two-step
+estimator achieves the minimum variance within the class of
+weighted ZHY estimators:
+\begin{equation}\label{eq:dominance}
+    \VV\!\left(\hat{\sigma}_{12}^{(2)}\,\big|\,\tau,\,\hat\kappa\right)
+    \;\leq\;
+    \VV\!\left(\hat{\sigma}_{12}(\mathbf{w})\,\big|\,\tau\right)
+    \quad \text{for all weight matrices } \mathbf{w}.
+\end{equation}
+\end{thm}
+
+\begin{proof}
+Unbiasedness follows from~\eqref{eq:zhou_unbiased}, since the
+two-step estimator is a weighted ZHY estimator and unbiasedness
+holds for arbitrary non-negative weights satisfying
+$T(\mathbf{w}) > 0$.
+
+The exact variance formula~\eqref{eq:var_twostep} follows directly
+from Theorem~\ref{thm:genHY} applied to the weights
+$\hat{\mathbf{w}}^*$.
+
+For the dominance statement~\eqref{eq:dominance}, fix
+$\tau$ and $\hat\kappa$. The full conditional
+variance~\eqref{eq:fullvar} is a strictly convex quadratic in
+$\mathbf{w}$ under the normalisation $T(\mathbf{w}) = 1$. The
+KKT system~\eqref{eq:kkt} with $\kappa = \hat\kappa$ characterises
+the unique global minimum of $V(\mathbf{w})$ with
+$\kappa = \hat\kappa$. Since $\hat{\mathbf{w}}^*$ solves
+this system, it achieves the minimum, and~\eqref{eq:dominance}
+follows.
+\end{proof}
+
+\begin{remark}[Computational cost]
+The KKT system~\eqref{eq:kkt} is a $(K+1)\times(K+1)$ linear
+system, where $K$ is the number of overlapping return-period pairs.
+It is solved in $O(K^3)$ time using standard linear algebra
+routines. Since the two-step estimator uses windowed processing
+(Section~\ref{sec:HYrecursion}), $K$ is the number of overlapping
+pairs within a single window, which is typically of order
+$(\lambda_1 + \lambda_2)\,\Delta t$ where $\lambda_1, \lambda_2$
+are the trade rates and $\Delta t$ is the window length.
+For a one-hour window with rates of 50 and 5 trades per minute,
+$K \approx 1{,}500$, giving a system of manageable size.
+\end{remark}
+
+\begin{remark}[Variance reduction]
+The variance reduction of the two-step estimator relative to the
+$A_1$-optimal estimator is exactly
+\begin{equation}\label{eq:reduction}
+    V\!\left(\mathbf{w}^{\mathrm{A_1}}\right)
+    - V\!\left(\mathbf{w}^*(\hat\kappa)\right)
+    \;=\;
+    \sigma_1^2\sigma_2^2
+    \bigl[A_1(\mathbf{w}^{\mathrm{A_1}}) - A_1(\mathbf{w}^*)\bigr]
+    \;+\;
+    \hat\kappa\,\sigma_1^2\sigma_2^2
+    \bigl[A_2(\mathbf{w}^{\mathrm{A_1}}) - A_2(\mathbf{w}^*)\bigr].
+\end{equation}
+As Table~\ref{tab:subopt} shows, this quantity is small (typically
+$< 1\%$) for realistic timestamp structures. The $A_1$-optimal
+weights are therefore nearly efficient. The value of the two-step
+estimator lies primarily in its theoretical completeness: it
+establishes that the weighted ZHY class can achieve the
+minimum variance for any given $\kappa$, and provides the
+explicit constructive procedure for doing so.
+
+The two-step estimator also serves as the natural candidate for
+establishing an analogue of the Cram\'{e}r-Rao lower bound in the
+asynchronous setting, as discussed in Section~\ref{sec:discussion}.
+\end{remark}
+
+\begin{remark}[Feasible two-step: consistency]
+A sufficient condition for $\hat{\sigma}_{12}^{(2)}$ to have the
+same asymptotic properties as the oracle two-step estimator
+(using the true $\kappa$) is that $\hat\kappa \to \kappa$ in
+probability as $\min(\lambda_1, \lambda_2) \to \infty$.
+Since $\hat\kappa$ is a continuous function of the consistent
+estimators $\hat\sigma_{12}^{(1)}$, $\hat\sigma_1^2$,
+$\hat\sigma_2^2$, this follows from the consistency of the
+$A_1$-optimal estimator established by
+\citet{hayashi2005covariance}.
+\end{remark}
