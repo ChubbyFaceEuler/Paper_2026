@@ -8,4 +8,4 @@ require mathlib from git
 
 lean_lib ZHY where
   srcDir := "lean"
-  roots := #[`ZHY_Core, `ZHY_Isserlis]
+  roots := #[`ZHY_Core, `ZHY_Isserlis, `ZHY_BLUE]
