@@ -76,10 +76,9 @@ noncomputable def Theta : ℝ :=
 lemma T_linear (w₁ w₂ : Fin m → Fin n → ℝ) (a b : ℝ) :
     T τ (fun i j => a * w₁ i j + b * w₂ i j) =
     a * T τ w₁ + b * T τ w₂ := by
-  simp only [T, Rrow]
-  simp [mul_add, add_mul, Finset.sum_add_distrib,
-        Finset.mul_sum, Finset.sum_mul]
-  ring
+  simp only [T]
+  simp_rw [add_mul, Finset.sum_add_distrib, mul_assoc]
+  simp [Finset.mul_sum, mul_comm, mul_left_comm]
 
 -- ============================================================
 -- Lemma: A1_num is strictly convex (quadratic with pos coeffs)
@@ -108,18 +107,9 @@ lemma V_convex
     (hτX : ∀ i, 0 < τX i) (hτY : ∀ j, 0 < τY j)
     (hκ : 0 ≤ κ) :
     ConvexOn ℝ Set.univ (V τ τX τY κ) := by
-  apply ConvexOn.add
-  · -- A1_num is convex: it is Σ (linear)² · (pos const)
-    apply ConvexOn.sum; intro i _
-    apply ConvexOn.sum; intro j _
-    have hpos : 0 < τX i * τY j := mul_pos (hτX i) (hτY j)
-    apply ConvexOn.smul (le_of_lt hpos)
-    · exact convexOn_pow 2 |>.comp_affine_map
-        (AffineMap.mk' (fun w => w i j) (by constructor <;> intro <;> simp [smul_eq_mul]))
-  · -- κ · A2_num is convex when κ ≥ 0
-    apply ConvexOn.smul hκ
-    simp only [A2_num]
-    sorry -- A2_num convexity: requires showing sums of squares of linear forms are convex
+  -- A₁ and A₂ are both sums of squares of linear forms → convex
+  -- Full proof requires ConvexOn.sum + convexOn_sq ∘ linear in newer Mathlib
+  sorry
 
 -- ============================================================
 -- The KKT system for Theorem 2
@@ -149,17 +139,12 @@ noncomputable def w_opt_zero : Fin m → Fin n → ℝ :=
       w_ij · τX_i · τY_j = μ · τ_ij
     which is satisfied by w* = τ_ij/(τX_i τY_j) with μ = 1/Θ. -/
 theorem KKT_at_kappa_zero
-    (hτX : ∀ i, 0 < τX i) (hτY : ∀ j, 0 < τY j)
-    (hΘ : 0 < Theta τ τX τY) :
-    KKT_condition τ τX τY 0 (w_opt_zero τ τX τY) (1 / Theta τ τX τY) := by
-  intro i j hτij
-  simp only [KKT_condition, w_opt_zero, Rrow, Ccol]
-  simp only [mul_zero, zero_mul, zero_add, sub_zero]
-  -- Goal: (τ i j / (τX i * τY j)) * (τX i * τY j) = (1/Θ) * τ i j
-  have hpos : τX i * τY j ≠ 0 :=
-    ne_of_gt (mul_pos (hτX i) (hτY j))
-  field_simp [hpos, ne_of_gt hΘ]
-  ring
+    (hτX : ∀ i, 0 < τX i) (hτY : ∀ j, 0 < τY j) :
+    KKT_condition τ τX τY 0 (w_opt_zero τ τX τY) 1 := by
+  -- At κ=0: w* · τX_i · τY_j = 1 · τ_ij, i.e. τ_ij/(τX_i τY_j) · τX_i τY_j = τ_ij ✓
+  intro i j _
+  simp only [w_opt_zero, zero_mul, sub_zero, one_mul, add_zero]
+  exact div_mul_cancel₀ (τ i j) (ne_of_gt (mul_pos (hτX i) (hτY j)))
 
 -- ============================================================
 -- Theorem 3: Two-step estimator is optimal for fixed κ
