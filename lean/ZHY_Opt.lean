@@ -258,11 +258,77 @@ lemma V_expand
           (w i j * (τX i * τY j - κ * τ i j ^ 2)
            + κ * τ i j * (Rrow τ w i + Ccol τ w j))
       + V_obj τ τX τY κ (fun i j => v i j - w i j) := by
-  -- The proof combines the six verified helpers above.
-  -- The remaining step is Finset bookkeeping with no new
-  -- mathematical content; see docstring above for the
-  -- complete algebraic derivation.
-  sorry
+  set d : Fin m → Fin n → ℝ := fun i j => v i j - w i j with hd_def
+  have hd_val : ∀ i j, d i j = v i j - w i j := fun i j => rfl
+  have hv : v = fun i j => w i j + d i j := by
+    funext i j; simp [hd_def]
+  conv_lhs => rw [hv]
+  simp only [V_obj]
+  rw [A1_num_expand τX τY w d, A2_num_expand τ w d]
+  rw [sum_Rrow_mul_eq_pairs τ w d, sum_Ccol_mul_eq_pairs τ w d]
+  rw [Finset.sum_comm (s := (Finset.univ : Finset (Fin n)))
+                       (t := (Finset.univ : Finset (Fin m)))
+                       (f := fun j i => Ccol τ w j * (d i j * τ i j))]
+  have pw : ∀ i j,
+      (v i j - w i j) *
+        (w i j * (τX i * τY j - κ * τ i j ^ 2)
+         + κ * τ i j * (Rrow τ w i + Ccol τ w j))
+      = w i j * d i j * τX i * τY j
+        + κ * (Rrow τ w i * (d i j * τ i j))
+        + κ * (Ccol τ w j * (d i j * τ i j))
+        - κ * (w i j * d i j * τ i j ^ 2) := fun i j => by
+    rw [← hd_val i j]; ring
+  have SK_inside :
+      ∑ i, ∑ j, (v i j - w i j) *
+        (w i j * (τX i * τY j - κ * τ i j ^ 2)
+         + κ * τ i j * (Rrow τ w i + Ccol τ w j))
+      = (∑ i, ∑ j, w i j * d i j * τX i * τY j)
+        + (∑ i, ∑ j, κ * (Rrow τ w i * (d i j * τ i j)))
+        + (∑ i, ∑ j, κ * (Ccol τ w j * (d i j * τ i j)))
+        - (∑ i, ∑ j, κ * (w i j * d i j * τ i j ^ 2)) := by
+    calc ∑ i, ∑ j, (v i j - w i j) *
+             (w i j * (τX i * τY j - κ * τ i j ^ 2)
+              + κ * τ i j * (Rrow τ w i + Ccol τ w j))
+        _ = ∑ i, ∑ j, (w i j * d i j * τX i * τY j
+              + κ * (Rrow τ w i * (d i j * τ i j))
+              + κ * (Ccol τ w j * (d i j * τ i j))
+              - κ * (w i j * d i j * τ i j ^ 2)) := by
+          apply Finset.sum_congr rfl; intro i _
+          apply Finset.sum_congr rfl; intro j _
+          exact pw i j
+        _ = ∑ i, ((∑ j, w i j * d i j * τX i * τY j)
+                 + (∑ j, κ * (Rrow τ w i * (d i j * τ i j)))
+                 + (∑ j, κ * (Ccol τ w j * (d i j * τ i j)))
+                 - (∑ j, κ * (w i j * d i j * τ i j ^ 2))) := by
+          apply Finset.sum_congr rfl; intro i _
+          rw [Finset.sum_sub_distrib]
+          rw [Finset.sum_add_distrib, Finset.sum_add_distrib]
+        _ = (∑ i, ∑ j, w i j * d i j * τX i * τY j)
+            + (∑ i, ∑ j, κ * (Rrow τ w i * (d i j * τ i j)))
+            + (∑ i, ∑ j, κ * (Ccol τ w j * (d i j * τ i j)))
+            - (∑ i, ∑ j, κ * (w i j * d i j * τ i j ^ 2)) := by
+          rw [Finset.sum_sub_distrib]
+          rw [Finset.sum_add_distrib, Finset.sum_add_distrib]
+  have pullR :
+      (∑ i, ∑ j, κ * (Rrow τ w i * (d i j * τ i j)))
+      = κ * ∑ i, ∑ j, Rrow τ w i * (d i j * τ i j) := by
+    rw [Finset.mul_sum]
+    apply Finset.sum_congr rfl; intro i _
+    rw [Finset.mul_sum]
+  have pullC :
+      (∑ i, ∑ j, κ * (Ccol τ w j * (d i j * τ i j)))
+      = κ * ∑ i, ∑ j, Ccol τ w j * (d i j * τ i j) := by
+    rw [Finset.mul_sum]
+    apply Finset.sum_congr rfl; intro i _
+    rw [Finset.mul_sum]
+  have pullS2 :
+      (∑ i, ∑ j, κ * (w i j * d i j * τ i j ^ 2))
+      = κ * ∑ i, ∑ j, w i j * d i j * τ i j ^ 2 := by
+    rw [Finset.mul_sum]
+    apply Finset.sum_congr rfl; intro i _
+    rw [Finset.mul_sum]
+  rw [SK_inside, pullR, pullC, pullS2]
+  ring
 
 -- ============================================================
 -- V_diff_nonneg: V(v) ≥ V(w) when w satisfies KKT and T(w)=T(v)=1
