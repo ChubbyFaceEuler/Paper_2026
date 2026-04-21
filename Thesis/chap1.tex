@@ -1,0 +1,20 @@
+\chapter{Introduction}\label{chap:introduction}
+\pagenumbering{arabic}	
+Nowadays most financial transactions are carried out electronically on automated exchanges or electronic communication networks (ECNs) and active participants in the market require sophisticated computing infrastructure to compete effectively.  This is particularly the case when dealing with the most heavily traded financial instruments such as government bond, foreign exchange, equity index and interest rate futures.  \textit{High-frequency data}, known also as \textit{tick-by-tick data}, are the transaction-by-transaction or quote-by-quote events that take place in a time interval from a few milliseconds to a few seconds.  These data present novel statistical challenges both in retrospectively analysing the vast stores of accumulated historical data and also in online processing of high-bandwidth multiple data streams arriving on millisecond time-scales.
+
+The measurement and interpretation of correlation is a dominant concern in the analysis of high-frequency financial data. There is substantial research activity in this area covering topics such as correlation between non-synchronous trade data; 
+correlation within order book data -- from the perspective of a market marker, hedger, etc.\ ; 
+the effect of feedback from algorithmic trading strategies; 
+changes in correlation and liquidity as a result of large price movements; 
+the classification and detection of autocorrelation and mean reversion; 
+correlation and volatility term structure, the Epps effect; 
+canonical correlation;  vector-valued autoregression;  cointegration; construction of sparse portfolios, e.g.\ calendar and butterfly spreads, and a great deal more. 
+
+The contributions of this thesis are in three areas: the comparison and development of methods for assessing volatility, cross-asset correlation and lead-lag effects.  In Chapters 2 and 3 we set the background, describing the sources of data and the types of statistical tools available for high-speed trading. We recognize that high-frequency analysis means high-speed analysis of
+financial data and this places severe constraints on the type of estimators that are feasible. The need for fast calculation in real time 
+leads to recursively defined estimators and we show how these can be built for volatility and covolatility estimation in Chapters 4 and 5. Throughout we emphasise the importance of working on a variety of different time scales rather than simple `wall clock' time.
+
+In Chapter 4 we focus on the estimation of volatility, looking particular at a class of estimates that can accommodate irregularly spaced data.  We derive new expressions for the variance of these estimators and show how they can be modified to obtain infill consistency. We provide explicit expressions for the variance of a basic volatility estimator proposed by Zhou (1996) and report progress on the development of a symbolic algebra package to handle more general volatility estimators in an extended class. In Chapter 5 we move on to consider the problem of covariance estimation and show that an early contribution by \citet{zhou1998estimating} contains many of the ideas that have recently become popular. We develop a new covariance estimator and demonstrate its superior performance. 
+
+Chapter 6 explores the problems of quantifying lead-lag relationships. We show that the extended covariance estimator developed in Chapter 5 provides a sharper estimate of lead-lag delay. We then develop a method of exploring lead-lag structure in depth and demonstrate how to obtain a maximum likelihood estimator of the delay structure. Chapter 7 briefly describes ongoing research questions relating to the design of hedging strategies at times of market disruption. 
+

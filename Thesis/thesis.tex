@@ -1,0 +1,204 @@
+\documentclass[12pt,a4paper,oneside,titlepage]{book}		
+\usepackage{times,calc,parskip,graphicx,natbib,eurosym,subcaption} %,subfigure
+\usepackage{amssymb,amsmath,amsthm,amscd,cite,setspace,epstopdf}
+\usepackage[all]{xy}
+\usepackage{url}
+\usepackage{xcolor}
+\usepackage[normalem]{ulem}
+\usepackage{fancyhdr}
+\usepackage{listings}
+\usepackage{text comp}
+\usepackage{tikz}
+\usetikzlibrary{decorations.pathreplacing}
+
+%% NOTE: Oxford University Thesis style is one-sided, left margin 32-38mm
+\addtolength{\topmargin}{-7mm}
+\setlength{\textwidth}{210mm-60mm}  % Text width
+\setlength{\oddsidemargin}{6mm}
+\setlength{\evensidemargin}{\oddsidemargin}
+\addtolength{\textheight}{5mm}
+\raggedbottom
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+\newcommand{\EE}{\mathbb{E}\,}
+\newcommand{\PP}{\mathbb{P}\,}
+\newcommand{\VV}{\text{\rm Var}\,}
+\newcommand{\CC}{\text{\rm Cov}\,}
+\newcommand{\bfx}{\mathbf{x}}
+\newcommand{\bff}{\mathbf{f}}
+\newcommand{\bfL}{\mathbf{L}}
+\newcommand{\bfF}{\mathbf{F}}
+\newcommand{\bfA}{\mathbf{A}}
+\newcommand{\bfa}{\mathbf{a}}
+\newcommand{\reci}[1]{\frac{1}{#1}}
+\newcommand{\hypot}[2]{\sqrt{#1^2+#2^2}}
+\newcommand{\cbrt}[1]{\sqrt[3]{#1}}
+\newcommand{\tz}{^{\,\text{T}}}
+\newcommand{\sgmX}{\sigma_{1}}
+\newcommand{\sgmY}{\sigma_{2}}
+\newcommand{\sgmXY}{\sigma_{12}}
+\newcommand{\sgmXX}{\sigma^2_{1}}
+\newcommand{\sgmYY}{\sigma^2_{2}}
+\newcommand{\bX}{\breve{X}}
+\newcommand{\bY}{\breve{Y}}
+\newcommand{\wlambda}{\phi}
+%%%%%%%%%%%%%%
+%new command to cross the original text in red.
+\newcommand\redsout{\bgroup\markoverwith{\textcolor{red}{\rule[0.3ex]{2pt}{2pt}}}\ULon}
+
+%new command to underline the original text in red.
+\newcommand\redunderline{\bgroup\markoverwith{\textcolor{red}{\rule[-0.5ex]{2pt}{2pt}}}\ULon}
+
+%new command, blue texts are the added material.
+\newcommand{\bluetext}{\textcolor{blue}}
+\newcommand{\blacktext}{\textcolor{black}}
+
+%new command, red texts are comments.
+\newcommand{\redtext}{\textcolor{red}}
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\newtheorem{thm}{Theorem}[chapter]
+\newtheorem{corollary}{Corollary}[chapter]
+\newtheorem{lemma}{Lemma}[chapter]
+% page style
+
+\def\openone{\leavevmode\hbox{\small1\kern-3.8pt\normalsize1}}%
+\pagestyle{fancyplain}  
+\fancyhf{}  
+\renewcommand{\headrulewidth}{0.3pt}  
+\addtolength{\headheight}{2.5pt}  
+\renewcommand{\chaptermark}[1]{\markboth{#1}{}}  
+\renewcommand{\sectionmark}[1]{\markright{\thesection\ #1}}  
+\fancyhead[L]{\textsl{\rightmark}}  
+\fancyhead[R]{\textsl{\leftmark}}  
+\renewcommand{\footrulewidth}{0pt}  
+\cfoot{\thepage}  
+\fancypagestyle{plain}{  
+	\fancyhead{}  
+	\renewcommand{\headrulewidth}{0pt}  
+}
+
+% figure placement
+% http://dcwww.camd.dtu.dk/~schiotz/comp/LatexTips/LatexTips.html#figplacement
+\renewcommand{\topfraction}{0.85}
+\renewcommand{\textfraction}{0.1}
+\renewcommand{\floatpagefraction}{0.75}
+
+
+\renewcommand{\UrlFont}{\small\tt}
+
+\begin{document}
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%% TITLE PAGE
+\begin{titlepage}
+\begin{center}
+ 
+\includegraphics{./Figures/Crest.eps}
+\vspace{1cm}
+
+\LARGE{Correlation methods in the statistical analysis of 
+
+financial trading data}\\
+ 
+\vspace{1.5cm}
+
+
+\Large{Yang Wu Azzollini}
+% Yang Wu
+
+\Large{Lady Margaret Hall}
+\vspace{1cm}
+
+\large{Hilary Term, 2016}
+\vfill
+\end{center}
+Thesis submitted for the degree of Doctor of Philosophy at the University of Oxford 
+\end{titlepage}
+%\thispagestyle{plain}
+%\pagenumbering{gobble}
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%% ABSTRACT
+\newpage
+\begin{onehalfspace}
+\thispagestyle{plain}
+\pagenumbering{gobble}
+%\begin{onehalfspace}
+%\onehalfspace
+\begin{center}
+\textbf{Correlation methods in the statistical analysis of financial trading data}
+
+\textbf{Yang Wu Azzollini}
+
+\textbf{Lady Margaret Hall, Oxford}
+\end{center}
+\vspace{1em}
+This thesis considers problems associated with the statistical analysis of correlation in financial trading data. Sources of data are identified and their characteristics are described.  Nowadays most financial transactions are carried out electronically on automated exchanges or electronic communication networks and active participants in the market require sophisticated computing infrastructure to compete effectively. These data are shown to present novel statistical challenges both in retrospectively analysing the vast stores of accumulated historical data and also in online processing of high-bandwidth multiple data streams arriving on millisecond time-scales. We show that computational speed dictates the range of statistical tools that are available for high-speed calculation. 
+
+The measurement and interpretation of correlation is a dominant concern in the analysis of high-frequency financial data. 
+We compare and develop methods for assessing volatility, cross-asset correlation and lead-lag effects. For volatility estimation we consider a class of estimates that can accommodate noisy irregularly spaced data.  We derive explicit expressions for the variance of these estimators and show how the estimators can be modified to obtain infill consistency. We then consider the problem of covariance estimation and develop a new estimator, demonstrating its superior performance. We explore the problems of quantifying lead-lag relationships and show that our new covariance estimator provides a sharper estimate of lead-lag delay. We then develop a method of exploring lead-lag structure in depth and demonstrate how to obtain a maximum likelihood estimator of the delay structure. The final chapter briefly describes ongoing research questions relating to the design of hedging strategies at times of market disruption. 
+
+\newpage
+\thispagestyle{plain}
+\pagenumbering{gobble}
+%\newpage
+\begin{center}
+
+\textbf{Dedication}
+\vspace{1em}
+\end{center}
+
+To my parents, Wu Feng Zhen and Yang Huan Li, who have been there for me from day one, taking the blows and giving me a chance to thrive.
+
+\vspace{1em}
+To my husband Domenico, who took my parents' baton and who gives me his merits of loyalty, friendship and passion for life.
+
+
+
+\vspace{1em}
+To my daughter Julia, who has been the joy of my life.
+
+\vspace{1em}
+This is a tribute to the four of you. Thank you for all of your encouragement, love and dedication.
+
+
+
+\newpage
+\thispagestyle{plain}
+\pagenumbering{gobble}
+\begin{center}
+\textbf{Acknowledgments}
+\vspace{1em}
+\end{center}
+
+Firstly, I would like to express my deep gratitude to my outstanding supervisor Dr.\ Peter Clifford for his clear and thorough teaching style, for his patient guidance and valuable suggestions during the development of this research, and for his assistance in keeping my progress on schedule. I could not have imagined having a better supervisor for my DPhil. Peter was the most influential person and mentor to me for over a decade of study in Oxford since I was an undergraduate. One day, I hope to be just like him, and to have his infinite wisdom and immense knowledge in statistics.
+
+
+Besides Dr.\ Peter Clifford, I would like to thank to my other supervisor Prof.\ Brian D.\ Ripley, who supervised me for two and half years before his early retirement, for his office door was always open for me and for his valuable guidance. Brian encouraged me to reach out and learn from various branches of statistics and broadened my statistical techniques.
+
+I would like to express my sincere gratitude to the industry experts who were involved in the validation for this research, Tim Sillitoe and Peter Rading, for their extraordinary support. Without their participation and countless input, this research could not have been successfully conducted. I would also like to thank Domenico Azzollini who gave expert advice and made sure that all the financial trading examples given in the thesis were accurate and precise. 
+
+This research would have been impossible without the support of the Royal Bank of Scotland, for the scholarship, the data, the trading infrastructure, and the working opportunities.
+
+Finally, I must express my very profound gratitude to my friends, Reg Mehta, Fiona, Russell and Sophie Bickerton for providing me with unfailing support and continuous encouragement throughout my years of study and through the process of researching and writing this thesis. This accomplishment would not have been possible without them. 
+
+
+
+
+\end{onehalfspace}
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%% BODY OF DOCUMENT
+\clearpage
+\begin{doublespace}
+%\doublespace
+\pagenumbering{roman}
+\tableofcontents		% this is optional
+
+\input chap1.tex
+\input chap2.tex
+\input chap3.tex
+\input chap4.tex
+\input chap5.tex
+\input chap6.tex
+\input chap7.tex 
+\bibliographystyle{apalike}
+\bibliography{sortedbiblio}	% use data in file "biblio.bib"
+\end{doublespace}
+\end{document}

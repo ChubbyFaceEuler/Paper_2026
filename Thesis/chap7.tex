@@ -1,0 +1,73 @@
+\chapter{Conclusion}
+The focus in this thesis has been on high-frequency trading and the compromises that have to made in implementing statistical tools under time constraints.  This leads us to consider statistics that can be computed in linear time and updated recursively. High-frequency trading forms a small part of the financial trading landscape. The fastest high-frequency traders are typically private firms trading with their own money.  Hedge funds have a different perspective, with large capital bases under management. For them major disruptions are particular important and the strategies they develop can be quite different from the high-frequency trader      
+
+    
+Now that I have a general picture of the methods that available for the estimation of volatility and covolatility, I have started to focus more closely on the practical problem of cross-Gamma hedging in the presence of jumps in asset prices.  Although they do not discuss the effect of jumps, the results on Delta hedging reported in Mykland and Zhang (2008) are intriguing. It will be interesting to see whether similar revelations are possible for Gamma and cross-Gamma hedging problems when dealing with rapid price movements. 
+
+A formal statistical methodology for modelling the impact of such jumps on the future volatility process is needed, for example to determine the best hedging strategy.    
+
+\subsection*{Issues with hedging}\label{hedging}
+A hybrid product has a value, $V$, at any particular point in time. An underlying asset involved in the contract often has a spot price $S$, 
+the price that is quoted for immediate settlement, i.e.\ payment and delivery. \textit{Delta} is the first derivative of $V$ with respect to $S$. 
+A \textit{Delta hedge} is a scheme that is designed to make the value of a contract insensitive to small changes in the price of the underlying asset.
+ \textit{Gamma} is a term reserved for the second derivative of $V$ with respect to $S$. Gamma is a measure of the rate of change of Delta with respect 
+to $S$. \textit{Cross-Gamma} is the mixed second partial derivative of a hybrid product with respect to the spot prices $S_1$ and $S_2$ of two 
+different underlying assets. It can be thought of as the sensitivity of the Delta for the first underlying to changes in the spot level of the 
+second, or vice versa. Ideally one would like to design investment strategies that simultaneously hedge Delta, Gamma and Cross-Gamma risk.
+
+Jumps are important because they represent a significant source of non-diversifiable risk as discussed at length in (Bollerslev et al., 2008)
+and the references therein. For risk management, a risk averse investor might be expected to shun investments with sharp unforeseeable movements.
+Jumps like that are of great importance for standard arbitrage-based arguments and derivatives pricing in particular, as the effect cannot readily 
+be hedged by a portfolio of the underlying asset, cash, and other derivatives. The presence of jumps makes incomplete markets. The degree of market
+incompleteness depends on the size and intensity of jumps, which determines the magnitude of derivative hedging error (see Naik and Lee, 1990; and
+Bertsimas et al., 2001). 
+
+
+The practical questions are: should we hedge before or after the jump, or both? If so how should we hedge it? And having detected a jump what do we do with it? Can we use the direction, size and intensity of jumps to forecast subsequent instantaneous volatility? If so, how fast can we estimate the
+volatility after the jump? 
+
+
+
+\nocite{ait2010high,
+ait2011ultra,               
+bannouh2009range,            barndorff2002econometric,   
+barndorff2004econometric,   barndorff2009realized,   
+barndorff2011multivariate,   bollerslev2008risk,         
+christensen2012covariation,  corsi2010threshold,         
+delbaen1994general,          dionne2009intraday,         
+dovonon2012bootstrapping,    dumas2002implied,           
+epps1979comovements,         evans2005currency,          
+fan2012vast,                 foster1996continuous,       
+griffin2011covariance,       hayashi2005covariance,      
+hayashi2006nonsynchronously, hayashi2008asymptotic,      
+hull2009options,             mastromatteo2011financial,  
+munnix2010compensating,      munnix2010impact,           
+mykland2008infrence,         mykland2012econometrics,    
+precup2007cross,             puntanen2005historical,     
+reno2003closer,              todorov2011volatility,      
+toth2007modeling,            toth2009accurate,           
+toth2009epps,                voev2007integrated,         
+wang2010vast,                zhang2005tale,              
+zhang2011estimating,         zhou1998estimating,         
+cont2003financial,           dacorogna2001introduction,  
+fitzgerald1993financial,     revuz2004continuous,        
+schoutens2003levy,           tankov2004financial,        
+CMEEurodollar,               toth2008multi,
+crash1929,
+crash1987,
+investorFear, 
+forecastVol,
+impliedVol, 
+assetAllocation,
+BankingMarkets,
+microstructure,
+lowLatency,
+utcTime,
+highFreqFX,
+king2011foreign,
+hasbrouck2009technology,
+engle2002analysis,
+miller1986financial,
+jegadeesh1996behavior,
+burghardt1994treasury,
+chaboud2014rise}
