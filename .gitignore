@@ -8,3 +8,4 @@ __pycache__/
 .lake/
 trading/data/*.csv
 .DS_Store
+HANDOFF_PRIVATE.md
