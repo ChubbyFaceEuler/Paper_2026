@@ -1,0 +1,53 @@
+% =========================================================
+% Paper text: asymptotic corollary for Theorem 3
+% =========================================================
+% Dr Yang Azzollini — 21 April 2026
+%
+% Intended placement: immediately after the statement of
+% Theorem 3 in the paper (wherever two-step efficiency is
+% introduced). This text complements the finite-sample
+% statement already formalised in Lean.
+%
+% Style: matches the existing paper tone — spare, technical,
+% no overselling. Uses the same notation conventions as
+% Yangs_theorems_summary.pdf.
+% =========================================================
+
+
+\begin{corollary}[Asymptotic attainment of the two-step bound]
+\label{cor:twostep-asymptotic}
+Let $\{\hat\kappa_N\}$ be a sequence of first-step estimates of $\kappa = \rho^2$
+obtained by substituting the Corollary~1.1 estimator into
+$\hat\kappa = (\hat\sigma_{12}^{(1)})^2 / (\hat\sigma_1^2 \hat\sigma_2^2)$,
+indexed by sample size $N$. Suppose $\hat\kappa_N \xrightarrow{\PP} \kappa_0$
+for some $\kappa_0 \in [0,1]$ as $N \to \infty$. Then the two-step estimator
+$\hat\sigma_{12}^{(2)}$ based on $\hat\kappa_N$ attains the variance bound of
+Theorem~3 at $\kappa = \kappa_0$:
+\[
+  \Var\!\left(\hat\sigma_{12}^{(2)} \,\big|\, \tau, \hat\kappa_N\right)
+  \;\xrightarrow{\PP}\;
+  \min_{w : T(w) = 1}\; \Var\!\left(\hat\sigma_{12}(w) \,\big|\, \tau, \kappa_0\right)
+  \qquad \text{as } N \to \infty.
+\]
+\end{corollary}
+
+\begin{proof}[Proof sketch]
+The KKT system of Theorem~2 defines the optimal weights $w^*(\kappa)$ as the
+unique solution of a $(K{+}1) \times (K{+}1)$ linear system whose coefficients
+are continuous in $\kappa$. Since the system matrix is non-singular on
+$[0,1]$ (as established in the proof of Theorem~2), the solution
+$w^*(\kappa)$ is continuous in $\kappa$ by Cramer's rule, and the
+variance $V(w^*(\kappa))$ is continuous in $\kappa$ as a quadratic form.
+Continuous mapping applied to $\hat\kappa_N \xrightarrow{\PP} \kappa_0$
+gives the result.
+\end{proof}
+
+\begin{remark}[Scope of the Lean~4 verification]
+The finite-sample fixed-$\kappa$ form of Theorem~3 is machine-verified in
+Lean~4 (see \texttt{ZHY\_Opt.two\_step\_efficiency}, commit
+\texttt{116f0df}). Corollary~\ref{cor:twostep-asymptotic} adds a standard
+continuity-plus-consistency argument whose probabilistic content —
+convergence in probability of $\hat\kappa_N$, continuous mapping — lies
+outside the deterministic-$\tau$ setting of the Lean formalisation, and
+is established on paper by the standard arguments above.
+\end{remark}
