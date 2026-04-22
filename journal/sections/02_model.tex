@@ -1,0 +1,84 @@
+% ============================================================
+% Section 2: Model
+% Journal of Financial Econometrics style
+% ============================================================
+
+\section{Model}\label{sec:model}
+
+\subsection{Price process and observation scheme}
+
+Let $(X(t),Y(t))$ be the bivariate latent log-price process on $[0,1]$,
+assumed to satisfy
+\begin{align}\label{eq:bivariateBM}
+  dX(t) &= \sigma_1\, dB_1(t), \nonumber \\
+  dY(t) &= \sigma_2\, dB_2(t),
+\end{align}
+where $B_1,B_2$ are standard Brownian motions with instantaneous correlation
+$\rho$, so $\langle dB_1, dB_2 \rangle = \rho\,dt$, and $\sigma_1,\sigma_2 > 0$,
+$\rho \in (-1,1)$ are constants.  The target parameter is the integrated
+covariance
+\begin{equation}\label{eq:target}
+  \sigma_{12} \;=\; \sigma_1 \sigma_2 \rho.
+\end{equation}
+
+Asset $X$ is observed at times $\mathcal{T} = (t_0, t_1, \ldots, t_m)$ and
+asset $Y$ at times $\mathcal{U} = (u_0, u_1, \ldots, u_n)$, with
+$t_0 = u_0 = 0$ and $t_m = u_n = 1$.  Observation times are fixed and
+independent of the price process; the two grids need not share any points in
+common.  The returns are
+\begin{equation*}
+  R_i = X(t_i) - X(t_{i-1}), \quad i = 1, \ldots, m, \qquad
+  S_j = Y(u_j) - Y(u_{j-1}), \quad j = 1, \ldots, n.
+\end{equation*}
+We write $\tau_i^X = t_i - t_{i-1}$ and $\tau_j^Y = u_j - u_{j-1}$ for the
+lengths of the return intervals.
+
+\subsection{Overlap structure}
+
+The \emph{overlap length} between the $i$th return interval of $X$ and the
+$j$th return interval of $Y$ is
+\begin{equation}\label{eq:overlap}
+  \tau_{ij} \;=\; \bigl|(t_{i-1},\, t_i] \cap (u_{j-1},\, u_j]\bigr|,
+\end{equation}
+where $|\cdot|$ denotes Lebesgue measure.  We have $\tau_{ij} \geq 0$, with
+$\tau_{ij} = 0$ whenever the two intervals are disjoint.
+
+The key consequences of the model~\eqref{eq:bivariateBM} are
+\begin{align}\label{eq:moments}
+  \mathbb{E}[R_i]     &= 0, &\quad \mathbb{E}[R_i^2] &= \sigma_1^2\,\tau_i^X, \nonumber \\
+  \mathbb{E}[S_j]     &= 0, &\quad \mathbb{E}[S_j^2] &= \sigma_2^2\,\tau_j^Y, \\
+  \mathbb{E}[R_i S_j] &= \sigma_{12}\,\tau_{ij}. & & \nonumber
+\end{align}
+The cross-moment identity in~\eqref{eq:moments} follows from the It\^{o}
+isometry: $\mathbb{E}[R_i S_j] = \rho\,\sigma_1\sigma_2\,|J_i^X \cap J_j^Y|
+= \sigma_{12}\,\tau_{ij}$.  It is the sole probabilistic input to all
+subsequent results; everything downstream is algebra.
+
+Further, since increments of Brownian motion over non-overlapping intervals
+are independent and jointly Gaussian, the Isserlis--Wick theorem gives
+\begin{equation}\label{eq:isserlis}
+  \mathrm{Cov}(R_i S_j,\, R_k S_l)
+  \;=\;
+  \sigma_1^2\sigma_2^2\,\tau_i^X\tau_j^Y\,\mathbf{1}_{(i,j)=(k,l)}
+  \;+\;
+  \sigma_{12}^2\,\tau_{il}\,\tau_{kj},
+\end{equation}
+for all $(i,j),(k,l) \in \{1,\ldots,m\}\times\{1,\ldots,n\}$.
+Equation~\eqref{eq:isserlis} is the foundation for the exact
+finite-sample variance formula in Theorem~\ref{thm:genHY}.
+
+\begin{remark}[Constant parameters]
+The assumption of constant $\sigma_1,\sigma_2,\rho$ is made for notational
+clarity.  All results hold for the time-varying case with
+$\sigma_1(t),\sigma_2(t),\rho(t)$ by replacing $\sigma_{12}$ with
+$\int_0^1 \sigma_1(t)\sigma_2(t)\rho(t)\,dt$ throughout, since the
+cross-moment identity $\mathbb{E}[R_i S_j] = \int_{J_i^X \cap J_j^Y}
+\sigma_{12}(t)\,dt$ continues to hold under It\^{o}'s isometry.
+\end{remark}
+
+\begin{remark}[No microstructure noise]
+We assume noise-free observations of the efficient log-price.  Extensions
+to the additive noise model, following \citet{zhang2011estimating} and
+\citet{bibinger2014estimating}, are discussed in
+Section~\ref{sec:discussion}.
+\end{remark}
