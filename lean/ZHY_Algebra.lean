@@ -1,19 +1,20 @@
-/-
-  ZHY Pure-Algebra Scaffolding
-  =============================
-  Yang Wu Azzollini (2026)
-
-  Finset.sum identities used by ZHY_Variance.  No probability content:
-  everything here is pure combinatorial algebra over Finset.
-
-  Lemmas exported:
-    · sum_square_off_diag       -- (∑ g)² - ∑ g² = ∑∑_{j≠l} g j · g l
-    · sum_firstcase_collapse    -- same-i case
-    · sum_secondcase_collapse   -- same-j case (symmetric)
-    · sum_split_four            -- 4-fold sum partitions by (i=k, j=l) cases
--/
-
 import Mathlib
+
+/-!
+# ZHY Pure-Algebra Scaffolding
+
+Yang Azzollini (2026).
+
+Finset.sum identities used by `ZHY_Variance`. No probability content:
+everything here is pure combinatorial algebra over Finset.
+
+## Main results
+
+* `sum_square_off_diag`    — (∑ g)² - ∑ g² = ∑∑_{j≠l} g j · g l
+* `sum_firstcase_collapse` — same-i case
+* `sum_secondcase_collapse` — same-j case (symmetric)
+* `sum_split_four`         — 4-fold sum partitions by (i=k, j=l) cases
+-/
 
 open BigOperators Finset
 

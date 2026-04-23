@@ -1,27 +1,32 @@
-/-
-  ZHY Exact Variance Decomposition: Lean 4 Formalisation
-  ======================================================
-  Yang Wu Azzollini (Oxford DPhil 2016, revised 2026)
-
-  Theorem 5.1 of the DPhil thesis:
-
-      Var(∑ᵢⱼ wᵢⱼ RᵢSⱼ | τ) = σ₁²σ₂² · U(w) + σ₁₂² · V(w)
-
-  where
-      U(w) = ∑ᵢⱼ wᵢⱼ² τXᵢ τYⱼ
-      V(w) = ∑ᵢ (∑ⱼ wᵢⱼτᵢⱼ)² + ∑ⱼ (∑ᵢ wᵢⱼτᵢⱼ)² − ∑ᵢⱼ wᵢⱼ²τᵢⱼ²
-
-  Probabilistic input (IsZHYModel): the bivariate-Brownian covariance
-  structure + Isserlis' Gaussian fourth-moment identity, packaged as
-  hypotheses.  Geometric input (NoRectangle): the Interval-Structure
-  Lemma from thesis p.108.  Variance-of-a-sum is a structural hypothesis.
-
-  The combinatorial scaffolding lives in ZHY_Algebra.lean; this file
-  assembles the final decomposition.  Zero sorries.
--/
-
 import Mathlib
 import ZHY_Algebra
+
+/-!
+# ZHY Exact Variance Decomposition — Lean 4 Formalisation
+
+Yang Azzollini (Oxford DPhil 2016, revised 2026).
+
+Theorem 5.1 of the DPhil thesis:
+
+    Var(∑ᵢⱼ wᵢⱼ RᵢSⱼ | τ) = σ₁²σ₂² · U(w) + σ₁₂² · V(w)
+
+where
+
+    U(w) = ∑ᵢⱼ wᵢⱼ² τXᵢ τYⱼ
+    V(w) = ∑ᵢ (∑ⱼ wᵢⱼτᵢⱼ)² + ∑ⱼ (∑ᵢ wᵢⱼτᵢⱼ)² − ∑ᵢⱼ wᵢⱼ²τᵢⱼ²
+
+Probabilistic input (`IsZHYModel`): the bivariate-Brownian covariance
+structure + Isserlis' Gaussian fourth-moment identity, packaged as
+hypotheses. Geometric input (`NoRectangle`): the Interval-Structure
+Lemma from thesis p.108. Variance-of-a-sum is a structural hypothesis.
+
+The combinatorial scaffolding lives in `ZHY_Algebra.lean`; this file
+assembles the final decomposition. Zero sorries.
+
+## Main result
+
+* `extendedZHY_variance` — Theorem 5.1 of Azzollini (2016).
+-/
 
 open BigOperators Finset
 
@@ -129,7 +134,8 @@ noncomputable def VSum (w : Fin m → Fin n → ℝ)
 -- ============================================================
 
 /--
-  **Theorem 5.1** (DPhil thesis 2016; formal verification 2026).
+  **Exact finite-sample variance of the extended Zhou–Hayashi–Yoshida
+  estimator.** (Theorem 5.1 of Azzollini (2016), DPhil thesis, University of Oxford; formal verification 2026.)
 
   Under the ZHY model, for any weight matrix `w`, the conditional
   variance of the weighted cross-product sum decomposes exactly:
@@ -140,7 +146,7 @@ noncomputable def VSum (w : Fin m → Fin n → ℝ)
   distributional assumption on timestamps beyond the overlap
   structure τ satisfying the Interval-Structure Lemma.
 -/
-theorem theorem51
+theorem extendedZHY_variance
     (τ    : Fin m → Fin n → ℝ)
     (τX   : Fin m → ℝ)
     (τY   : Fin n → ℝ)
